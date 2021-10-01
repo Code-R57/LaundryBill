@@ -56,9 +56,7 @@ class MyProfileViewModel(val database: LaundryDao, application: Application) : V
 
     private suspend fun getCollectedList(): List<Laundry>? {
         return withContext(Dispatchers.IO) {
-            var laundryList: List<Laundry>?
-            laundryList = database.getCollectedLaundryItem()
-            return@withContext laundryList
+            return@withContext database.getCollectedLaundryItem()
         }
     }
 

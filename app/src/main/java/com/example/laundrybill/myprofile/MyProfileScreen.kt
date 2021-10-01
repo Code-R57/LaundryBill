@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
@@ -26,6 +25,8 @@ import com.example.laundrybill.database.Laundry
 @Composable
 fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewModel) {
 
+    viewModel.initialize()
+
     val pendingLaundry: List<Laundry> by viewModel.pendingLaundryList.observeAsState(listOf())
     val pendingBillAmount: Double by viewModel.pendingAmount.observeAsState(0.00)
     val moneySpent: Double by viewModel.totalAmount.observeAsState(0.00)
@@ -35,15 +36,14 @@ fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewMo
         Text("Pending Bill: $pendingBillAmount")
         Text("To Be Collected")
 
-        val listState = rememberLazyListState()
-
-        LazyColumn(state = listState) {
+        LazyColumn {
             itemsIndexed(pendingLaundry) { index, laundryItem ->
                 LaundryItemCard(laundryItem, viewModel, navController)
             }
         }
         Button(
-            onClick = { navController.navigate(NavigationItem.AddLaundry.route) },
+            onClick = {
+                navController.navigate(NavigationItem.AddLaundry.route) },
             shape = CircleShape
         ) {
             Icon(Icons.Default.Add, contentDescription = "Add Cloth")
@@ -64,22 +64,27 @@ fun LaundryItemCard(laundry: Laundry, viewModel: MyProfileViewModel, navControll
                 Row {
 
                     Button(onClick = { Log.i("myInfo", "Button Collect")
-                    viewModel.onCollectedClicked(laundry)}) {
+                    viewModel.onCollectedClicked(laundry)
+                    viewModel.initialize()}) {
                         Icon(Icons.Default.Check, contentDescription = "Cloth Collected")
                     }
 
                     Button(onClick = { Log.i("myInfo", "Button Delete")
-                    viewModel.onDeleteLaundryClicked(laundry.itemId)}) {
+                    viewModel.onDeleteLaundryClicked(laundry.itemId)
+                    viewModel.initialize()}) {
                         Icon(Icons.Default.Delete, contentDescription = "Delete")
                     }
 
-                    Button(onClick = { Log.i("myInfo", "Button Edit")
-                    navController.navigate(NavigationItem.AddLaundry.route + "?itemId={${laundry.itemId}}")}) {
+                    Button(onClick = { Log.i("myInfo", "Button Edit - ${routeBuilder(laundry.itemId)}")
+                    navController.navigate(routeBuilder(laundry.itemId))}) {
                         Icon(Icons.Default.Edit, contentDescription = "Edit")
                     }
                 }
             }
-
         }
     }
+}
+
+fun routeBuilder(itemId: Long): String {
+    return (NavigationItem.AddLaundry.route + "?itemId="+ itemId.toString())
 }

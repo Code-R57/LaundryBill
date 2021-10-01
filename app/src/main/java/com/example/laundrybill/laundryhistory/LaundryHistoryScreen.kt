@@ -6,13 +6,16 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import com.example.laundrybill.database.Laundry
 
 @Composable
-fun LaundryHistoryScreen() {
+fun LaundryHistoryScreen(viewModel: LaundryHistoryViewModel) {
 
-    val laundryHistory: List<Laundry> =
-        listOf(Laundry(status = "Completed"), Laundry(status = "Completed"))
+    val laundryHistory: List<Laundry> by viewModel.collectedLaundryList.observeAsState(listOf())
+
+    viewModel.initialize()
 
     Column {
         Text("Clothes Collected")

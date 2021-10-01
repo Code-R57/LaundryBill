@@ -31,8 +31,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.laundrybill.addlaundry.AddLaundryScreen
+import com.example.laundrybill.addlaundry.AddLaundryViewModel
+import com.example.laundrybill.addlaundry.AddLaundryViewModelFactory
 import com.example.laundrybill.database.LaundryDatabase
 import com.example.laundrybill.laundryhistory.LaundryHistoryScreen
+import com.example.laundrybill.laundryhistory.LaundryHistoryViewModel
+import com.example.laundrybill.laundryhistory.LaundryHistoryViewModelFactory
 import com.example.laundrybill.myprofile.MyProfileScreen
 import com.example.laundrybill.myprofile.MyProfileViewModel
 import com.example.laundrybill.myprofile.MyProfileViewModelFactory
@@ -47,18 +51,33 @@ class MainActivity : ComponentActivity() {
         val application = requireNotNull(this).application
         val dataSource = LaundryDatabase.getInstance(application).laundryDao
 
-        val myProfileViewModel: MyProfileViewModel by viewModels { MyProfileViewModelFactory(dataSource, application) }
+        val myProfileViewModel: MyProfileViewModel by viewModels {
+            MyProfileViewModelFactory(
+                dataSource,
+                application
+            )
+        }
+        val addLaundryViewModel: AddLaundryViewModel by viewModels {
+            AddLaundryViewModelFactory(
+                dataSource,
+                application
+            )
+        }
+
+        val laundryHistoryViewModel: LaundryHistoryViewModel by viewModels {
+            LaundryHistoryViewModelFactory(dataSource, application)
+        }
 
         setContent {
             LaundryBillTheme {
-                MainScreen(myProfileViewModel)
+                MainScreen(myProfileViewModel, addLaundryViewModel, laundryHistoryViewModel)
             }
         }
     }
 }
 
 @Composable
-fun MainScreen(myProfileViewModel: MyProfileViewModel) {
+fun MainScreen(myProfileViewModel: MyProfileViewModel, addLaundryViewModel: AddLaundryViewModel, laundryHistoryViewModel: LaundryHistoryViewModel) {
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
@@ -71,7 +90,7 @@ fun MainScreen(myProfileViewModel: MyProfileViewModel) {
             Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
         },
     ) {
-        Navigation(navController, myProfileViewModel)
+        Navigation(navController, myProfileViewModel, addLaundryViewModel, laundryHistoryViewModel)
     }
 }
 
@@ -183,13 +202,18 @@ fun DrawerItem(item: NavigationItem, selected: Boolean, onItemClick: (Navigation
 }
 
 @Composable
-fun Navigation(navController: NavHostController, myProfileViewModel: MyProfileViewModel) {
+fun Navigation(
+    navController: NavHostController,
+    myProfileViewModel: MyProfileViewModel,
+    addLaundryViewModel: AddLaundryViewModel,
+    historyViewModel: LaundryHistoryViewModel
+) {
     NavHost(navController, startDestination = NavigationItem.MyProfile.route) {
         composable(NavigationItem.MyProfile.route) {
             MyProfileScreen(navController, myProfileViewModel)
         }
         composable(NavigationItem.LaundryHistory.route) {
-            LaundryHistoryScreen()
+            LaundryHistoryScreen(historyViewModel)
         }
 
         composable(
@@ -197,13 +221,19 @@ fun Navigation(navController: NavHostController, myProfileViewModel: MyProfileVi
             arguments = listOf(navArgument("itemId") {
                 type = NavType.LongType
                 defaultValue = -1L
-            })) {
-            it.arguments?.let {
-                AddLaundryScreen(itemId = it.getLong("itemId"))
+            })
+        ) {
+            it.arguments?.getLong("itemId")?.let {
+                AddLaundryScreen(
+                    itemId = it,
+                    viewModel = addLaundryViewModel,
+                    navController = navController
+                )
             }
         }
     }
 }
+
 
 sealed class NavigationItem(var route: String, var title: String) {
     object MyProfile : NavigationItem("myProfile", "My Profile")

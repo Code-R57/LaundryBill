@@ -10,16 +10,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.navigation.NavHostController
+import com.example.laundrybill.NavigationItem
 import com.example.laundrybill.database.Laundry
 
 @Composable
-fun AddLaundryScreen(itemId: Long) {
+fun AddLaundryScreen(itemId: Long, viewModel: AddLaundryViewModel, navController: NavHostController) {
+
+    var laundryItem = Laundry()
+    if(itemId != -1L) laundryItem.itemId = itemId
     Column {
-        val inputValue: MutableState<String>? = remember { mutableStateOf("01/01/2021") }
+        var inputValue: MutableState<String>? = remember { mutableStateOf("01/01/2021") }
         if (itemId == -1L) {
             Text(text = "Add Clothes")
         } else {
             Text("Edit")
+            inputValue = remember { mutableStateOf(laundryItem.collectionDate) }
         }
         for (cloth in clothList) {
             ClothListInput(cloth, Laundry())
@@ -29,15 +35,20 @@ fun AddLaundryScreen(itemId: Long) {
             inputValue?.value?.let {
                 OutlinedTextField(value = it, onValueChange = { newValue ->
                     inputValue.value = newValue
+                    laundryItem.collectionDate = inputValue.value
                 })
             }
         }
         Button(onClick = {
             if (itemId == -1L) {
                 Log.i("myInfo", "Add")
+                viewModel.onAddClicked(laundryItem)
+
             } else {
                 Log.i("myInfo", "Update")
+                viewModel.onEditClicked(laundryItem)
             }
+            navController.navigate(NavigationItem.MyProfile.route)
         }) {
             Text(if (itemId == -1L) "Add" else "Edit")
         }
