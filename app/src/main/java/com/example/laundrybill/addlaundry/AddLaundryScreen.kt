@@ -1,37 +1,73 @@
 package com.example.laundrybill.addlaundry
 
 import android.util.Log
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.laundrybill.NavigationItem
 import com.example.laundrybill.database.Laundry
 
 @Composable
-fun AddLaundryScreen(itemId: Long, viewModel: AddLaundryViewModel, navController: NavHostController) {
+fun AddLaundryScreen(
+    itemId: Long,
+    viewModel: AddLaundryViewModel,
+    navController: NavHostController
+) {
 
-    var laundryItem = Laundry()
-    if(itemId != -1L) laundryItem.itemId = itemId
-    Column {
+    viewModel.initialize(itemId)
+    val laundryItem: Laundry by viewModel.laundryItem.observeAsState(Laundry())
+    Column(
+        Modifier
+            .padding(4.dp)
+            .fillMaxWidth()) {
         var inputValue: MutableState<String>? = remember { mutableStateOf("01/01/2021") }
         if (itemId == -1L) {
-            Text(text = "Add Clothes")
+            Text(
+                text = "Add Clothes", style = TextStyle(
+                    color = Color.LightGray,
+                    fontSize = 32.sp,
+                    textAlign = TextAlign.Center
+                ), modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(6.dp, bottom = 16.dp, top = 20.dp)
+            )
         } else {
-            Text("Edit")
+            Text(
+                "Edit", style = TextStyle(
+                    color = Color.LightGray,
+                    fontSize = 32.sp,
+                    textAlign = TextAlign.Center
+                ), modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(6.dp)
+            )
             inputValue = remember { mutableStateOf(laundryItem.collectionDate) }
         }
         for (cloth in clothList) {
             ClothListInput(cloth, Laundry())
         }
-        Row {
-            Text("Date of Collection")
+        Row(
+            Modifier
+                .padding(4.dp)
+                .fillMaxWidth()) {
+            Text("Date of Collection",style = TextStyle(
+                color = Color.LightGray,
+                fontSize = 18.sp
+            ), modifier = Modifier
+                .padding(4.dp)
+                .width(115.dp)
+                .padding(horizontal = 6.dp))
             inputValue?.value?.let {
                 OutlinedTextField(value = it, onValueChange = { newValue ->
                     inputValue.value = newValue
@@ -49,24 +85,45 @@ fun AddLaundryScreen(itemId: Long, viewModel: AddLaundryViewModel, navController
                 viewModel.onEditClicked(laundryItem)
             }
             navController.navigate(NavigationItem.MyProfile.route)
-        }) {
-            Text(if (itemId == -1L) "Add" else "Edit")
+        }, modifier = Modifier
+            .align(Alignment.End)
+            .padding(16.dp)) {
+            Text(if (itemId == -1L) "Add" else "Edit", style = TextStyle(fontSize = 20.sp))
         }
-        Text("$itemId")
+        Log.i("myInfo","$itemId")
     }
 }
 
 @Composable
 fun ClothListInput(cloth: Pair<String, Double>, laundryCloth: Laundry) {
     val inputValue = remember { mutableStateOf("0") }
-    Row {
-        Column {
-            Text(cloth.first)
-            Text("Rate: ${cloth.second}")
+    Box{
+        Row(
+            Modifier
+                .padding(4.dp)
+                .fillMaxWidth()) {
+            Column(modifier = Modifier.padding(6.dp)) {
+                Text(
+                    cloth.first, style = TextStyle(
+                        color = Color.LightGray,
+                        fontSize = 22.sp
+                    ), modifier = Modifier
+                        .padding(4.dp)
+                        .width(100.dp)
+                )
+                Text(
+                    "Rate: ₹ ${cloth.second}", style = TextStyle(
+                        color = Color.DarkGray,
+                        fontSize = 14.sp
+                    ), modifier = Modifier
+                        .padding(4.dp)
+                        .width(100.dp)
+                )
+            }
+            OutlinedTextField(value = inputValue.value, onValueChange = { newValue ->
+                inputValue.value = newValue
+            })
         }
-        OutlinedTextField(value = inputValue.value, onValueChange = { newValue ->
-            inputValue.value = newValue
-        })
     }
 }
 

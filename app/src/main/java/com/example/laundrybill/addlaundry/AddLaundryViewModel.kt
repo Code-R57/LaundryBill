@@ -1,6 +1,8 @@
 package com.example.laundrybill.addlaundry
 
 import android.app.Application
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.laundrybill.database.Laundry
@@ -16,6 +18,10 @@ class AddLaundryViewModel(val database: LaundryDao, application: Application) : 
         viewModelJob.cancel()
     }
 
+    private val _laundryItem = MutableLiveData<Laundry>()
+    val laundryItem: LiveData<Laundry>
+    get() = _laundryItem
+
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
     private suspend fun insert(laundry: Laundry) {
@@ -30,6 +36,17 @@ class AddLaundryViewModel(val database: LaundryDao, application: Application) : 
         }
     }
 
+    private suspend fun getItem(itemId: Long): Laundry {
+        return withContext(Dispatchers.IO) {
+            if(itemId != -1L) {
+                return@withContext database.getLaundryItem(itemId)
+            }
+            else {
+                return@withContext Laundry()
+            }
+        }
+    }
+
     fun onEditClicked(laundry: Laundry) {
         viewModelScope.launch {
             update(laundry)
@@ -39,6 +56,12 @@ class AddLaundryViewModel(val database: LaundryDao, application: Application) : 
     fun onAddClicked(laundry: Laundry) {
         viewModelScope.launch {
             insert(laundry)
+        }
+    }
+
+    fun initialize(itemId: Long) {
+        viewModelScope.launch {
+            _laundryItem.value = getItem(itemId)
         }
     }
 }

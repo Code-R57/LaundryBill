@@ -168,15 +168,6 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
             }
         }
         Spacer(modifier = Modifier.weight(1f))
-        Text(
-            text = "Developed by John Codeos",
-            color = Color.White,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .padding(12.dp)
-                .align(Alignment.CenterHorizontally)
-        )
     }
 }
 
