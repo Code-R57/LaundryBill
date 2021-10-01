@@ -19,15 +19,15 @@ interface LaundryDao {
     fun deleteLaundryItem(itemId: Long)
 
     @Query("SELECT * FROM laundry_data ORDER BY item_id DESC")
-    fun getAllLaundryItem(): LiveData<List<Laundry>>
+    fun getAllLaundryItem(): List<Laundry>?
 
     @Query("SELECT * FROM laundry_data WHERE status = 'Pending' ORDER BY item_id DESC")
-    fun getPendingLaundryItem(): LiveData<List<Laundry>>
+    fun getPendingLaundryItem(): List<Laundry>?
 
     @Query("SELECT * FROM laundry_data WHERE status = 'Collected' ORDER BY item_id DESC")
-    fun getCollectedLaundryItem(): LiveData<List<Laundry>>
+    fun getCollectedLaundryItem(): List<Laundry>?
 
     @Query("SELECT * FROM laundry_data WHERE item_id = :itemId")
-    fun getLaundryItem(itemId: Long): LiveData<Laundry>
+    fun getLaundryItem(itemId: Long): Laundry
 
 }

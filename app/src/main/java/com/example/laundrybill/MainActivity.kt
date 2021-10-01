@@ -3,6 +3,7 @@ package com.example.laundrybill
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,12 +24,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.laundrybill.addlaundry.AddLaundryScreen
+import com.example.laundrybill.database.LaundryDatabase
 import com.example.laundrybill.laundryhistory.LaundryHistoryScreen
 import com.example.laundrybill.myprofile.MyProfileScreen
+import com.example.laundrybill.myprofile.MyProfileViewModel
+import com.example.laundrybill.myprofile.MyProfileViewModelFactory
 import com.example.laundrybill.ui.theme.LaundryBillTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -36,27 +43,26 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val application = requireNotNull(this).application
+        val dataSource = LaundryDatabase.getInstance(application).laundryDao
+
+        val myProfileViewModel: MyProfileViewModel by viewModels { MyProfileViewModelFactory(dataSource, application) }
+
         setContent {
             LaundryBillTheme {
-                // A surface container using the 'background' color from the theme
-                MainScreen()
+                MainScreen(myProfileViewModel)
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Composable
-fun MainScreen() {
+fun MainScreen(myProfileViewModel: MyProfileViewModel) {
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
-    // If you want the drawer from the right side, uncomment the following
-    // CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = { TopBar(scope = scope, scaffoldState = scaffoldState) },
@@ -65,9 +71,8 @@ fun MainScreen() {
             Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
         },
     ) {
-        Navigation(navController = navController)
+        Navigation(navController, myProfileViewModel)
     }
-    // }
 }
 
 @Composable
@@ -121,15 +126,12 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
                 .fillMaxWidth()
                 .height(5.dp)
         )
-        // List of navigation items
+
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
             DrawerItem(item = item, selected = currentRoute == item.route, onItemClick = {
                 navController.navigate(item.route) {
-                    // Pop up to the start destination of the graph to
-                    // avoid building up a large stack of destinations
-                    // on the back stack as users select items
                     navController.graph.startDestinationRoute?.let { route ->
                         popUpTo(route) {
                             saveState = true
@@ -181,13 +183,24 @@ fun DrawerItem(item: NavigationItem, selected: Boolean, onItemClick: (Navigation
 }
 
 @Composable
-fun Navigation(navController: NavHostController) {
+fun Navigation(navController: NavHostController, myProfileViewModel: MyProfileViewModel) {
     NavHost(navController, startDestination = NavigationItem.MyProfile.route) {
         composable(NavigationItem.MyProfile.route) {
-            MyProfileScreen(navController = navController)
+            MyProfileScreen(navController, myProfileViewModel)
         }
         composable(NavigationItem.LaundryHistory.route) {
             LaundryHistoryScreen()
+        }
+
+        composable(
+            NavigationItem.AddLaundry.route + "?itemId={itemId}",
+            arguments = listOf(navArgument("itemId") {
+                type = NavType.LongType
+                defaultValue = -1L
+            })) {
+            it.arguments?.let {
+                AddLaundryScreen(itemId = it.getLong("itemId"))
+            }
         }
     }
 }
@@ -195,4 +208,5 @@ fun Navigation(navController: NavHostController) {
 sealed class NavigationItem(var route: String, var title: String) {
     object MyProfile : NavigationItem("myProfile", "My Profile")
     object LaundryHistory : NavigationItem("laundryHistory", "Laundry History")
+    object AddLaundry : NavigationItem("addLaundry", "Add/Edit Laundry")
 }
