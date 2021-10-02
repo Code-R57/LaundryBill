@@ -31,7 +31,7 @@ fun AddLaundryScreen(
         Modifier
             .padding(4.dp)
             .fillMaxWidth()) {
-        var inputValue: MutableState<String>? = remember { mutableStateOf("01/01/2021") }
+        val inputValue: MutableState<String>?
         if (itemId == -1L) {
             Text(
                 text = "Add Clothes", style = TextStyle(
@@ -42,6 +42,7 @@ fun AddLaundryScreen(
                     .fillMaxWidth()
                     .padding(6.dp, bottom = 16.dp, top = 20.dp)
             )
+            inputValue = remember { androidx.compose.runtime.mutableStateOf("01/01/2021") }
         } else {
             Text(
                 "Edit", style = TextStyle(
@@ -71,8 +72,10 @@ fun AddLaundryScreen(
             inputValue?.value?.let {
                 OutlinedTextField(value = it, onValueChange = { newValue ->
                     inputValue.value = newValue
-                    laundryItem.collectionDate = inputValue.value
                 })
+            }
+            if (inputValue != null) {
+                laundryItem.collectionDate = inputValue.value
             }
         }
         Button(onClick = {
