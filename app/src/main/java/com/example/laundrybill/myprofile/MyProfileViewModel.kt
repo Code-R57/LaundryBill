@@ -34,7 +34,7 @@ class MyProfileViewModel(val database: LaundryDao, application: Application) : V
     val isDarkMode: LiveData<Boolean>
         get() = _isDarkMode
 
-    var collectedLaundryList : List<Laundry>? = listOf()
+    var collectedLaundryList: List<Laundry>? = listOf()
 
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
@@ -93,7 +93,7 @@ class MyProfileViewModel(val database: LaundryDao, application: Application) : V
             _pendingAmount.value = total
             collectedLaundryList = getCollectedList()
             total = 0.00
-            collectedLaundryList?.forEach{
+            collectedLaundryList?.forEach {
                 total += it.totalAmount
             }
             _totalAmount.value = total

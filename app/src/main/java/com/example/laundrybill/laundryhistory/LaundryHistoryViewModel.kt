@@ -36,7 +36,7 @@ class LaundryHistoryViewModel(val database: LaundryDao, application: Application
         }
     }
 
-    init{
+    init {
         initialize()
     }
 }

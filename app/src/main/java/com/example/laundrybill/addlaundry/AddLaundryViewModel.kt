@@ -1,7 +1,6 @@
 package com.example.laundrybill.addlaundry
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,7 +21,7 @@ class AddLaundryViewModel(val database: LaundryDao, application: Application) : 
 
     private val _laundryItem = MutableLiveData<Laundry>()
     val laundryItem: LiveData<Laundry>
-    get() = _laundryItem
+        get() = _laundryItem
 
     private val _currentDate = MutableLiveData<String>()
     val currentDate: LiveData<String>
@@ -54,10 +53,9 @@ class AddLaundryViewModel(val database: LaundryDao, application: Application) : 
 
     private suspend fun getItem(itemId: Long): Laundry {
         return withContext(Dispatchers.IO) {
-            if(itemId != -1L) {
+            if (itemId != -1L) {
                 return@withContext database.getLaundryItem(itemId)
-            }
-            else {
+            } else {
                 return@withContext Laundry()
             }
         }

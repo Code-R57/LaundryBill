@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.laundrybill.database.LaundryDao
 
-class LaundryHistoryViewModelFactory (
+class LaundryHistoryViewModelFactory(
     private val dataSource: LaundryDao,
     private val application: Application
 ) : ViewModelProvider.Factory {
