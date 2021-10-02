@@ -43,8 +43,10 @@ import com.example.laundrybill.myprofile.MyProfileViewModel
 import com.example.laundrybill.myprofile.MyProfileViewModelFactory
 import com.example.laundrybill.ui.theme.LaundryBillTheme
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
 
 class MainActivity : ComponentActivity() {
+    @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -78,7 +80,6 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             val isDarkMode: Boolean? by myProfileViewModel.isDarkMode.observeAsState()
-            Log.i("myInfo", isDarkMode.toString())
             LaundryBillTheme(isDarkMode!!) {
                 MainScreen(myProfileViewModel, addLaundryViewModel, laundryHistoryViewModel)
             }
@@ -86,6 +87,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@ExperimentalComposeUiApi
 @Composable
 fun MainScreen(
     myProfileViewModel: MyProfileViewModel,
@@ -150,6 +152,7 @@ fun TopBar() {
     )
 }
 
+@ExperimentalComposeUiApi
 @Composable
 fun Navigation(
     navController: NavHostController,

@@ -1,6 +1,7 @@
 package com.example.laundrybill.addlaundry
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.laundrybill.database.Laundry
 import com.example.laundrybill.database.LaundryDao
 import kotlinx.coroutines.*
+import java.util.*
 
 class AddLaundryViewModel(val database: LaundryDao, application: Application) : ViewModel() {
 
@@ -21,6 +23,20 @@ class AddLaundryViewModel(val database: LaundryDao, application: Application) : 
     private val _laundryItem = MutableLiveData<Laundry>()
     val laundryItem: LiveData<Laundry>
     get() = _laundryItem
+
+    private val _currentDate = MutableLiveData<String>()
+    val currentDate: LiveData<String>
+        get() = _currentDate
+
+    init {
+        val c = Calendar.getInstance()
+        val year = c.get(Calendar.YEAR)
+        val month = c.get(Calendar.MONTH)
+        val day = c.get(Calendar.DAY_OF_MONTH)
+        _currentDate.value = year.toString()
+        _currentDate.value += if (month < 10) " 0$month" else " $month"
+        _currentDate.value += if (day < 10) " 0$day" else " $day"
+    }
 
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 

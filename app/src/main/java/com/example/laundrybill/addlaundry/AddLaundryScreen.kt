@@ -37,6 +37,7 @@ fun AddLaundryScreen(
 
     viewModel.initialize(itemId)
     val laundryItem: Laundry by viewModel.laundryItem.observeAsState(Laundry())
+    val currentDate: String? by viewModel.currentDate.observeAsState()
     var clothNumber: Array<Int> = arrayOf(0, 0, 0, 0)
 
     Column(
@@ -44,11 +45,7 @@ fun AddLaundryScreen(
             .padding(4.dp)
             .fillMaxWidth()
     ) {
-        Log.i(
-            "myInfo",
-            laundryItem.collectionDate + "   " + convertIsoFormatToDate(laundryItem.collectionDate)
-        )
-        val date = convertIsoFormatToDate(laundryItem.collectionDate)
+        val date = convertIsoFormatToDate(if (currentDate != null) currentDate!! else "01 01 2021")
         val inputValue: MutableState<String> =
             remember { mutableStateOf(date) }
 
@@ -103,11 +100,9 @@ fun AddLaundryScreen(
                     laundryItem.totalAmount += (clothList[index].second * number)
                 }
                 if (itemId == -1L) {
-                    Log.i("myInfo", "Add")
                     viewModel.onAddClicked(laundryItem)
 
                 } else {
-                    Log.i("myInfo", "Update")
                     viewModel.onEditClicked(laundryItem)
                 }
                 navController.navigate(NavigationItem.MyProfile.route)
@@ -117,7 +112,6 @@ fun AddLaundryScreen(
         ) {
             Text(if (itemId == -1L) "Add" else "Edit", style = TextStyle(fontSize = 20.sp))
         }
-        Log.i("myInfo", "$itemId")
     }
 }
 

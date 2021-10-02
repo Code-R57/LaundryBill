@@ -128,7 +128,6 @@ fun LaundryItemCard(
     ) {
         Column(Modifier.padding(16.dp)) {
 
-            Log.i("myInfo", laundry.collectionDate + "  "+ convertIsoFormatToDate(laundry.collectionDate))
             Text(
                 convertIsoFormatToDate(laundry.collectionDate),
                 style = TextStyle(fontSize = 24.sp), modifier = Modifier.padding(6.dp)
@@ -148,7 +147,6 @@ fun LaundryItemCard(
             Row(Modifier.padding(vertical = 4.dp, horizontal = 2.dp)) {
 
                 Button(onClick = {
-                    Log.i("myInfo", "Button Collect")
                     viewModel.onCollectedClicked(laundry)
                     viewModel.initialize()
                 }) {
@@ -156,7 +154,6 @@ fun LaundryItemCard(
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 Button(onClick = {
-                    Log.i("myInfo", "Button Delete")
                     viewModel.onDeleteLaundryClicked(laundry.itemId)
                     viewModel.initialize()
                 }) {
@@ -164,15 +161,6 @@ fun LaundryItemCard(
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 Button(onClick = {
-                    Log.i(
-                        "myInfo",
-                        "Button Edit - ${
-                            routeBuilder(
-                                NavigationItem.AddLaundry.route,
-                                laundry.itemId
-                            )
-                        }"
-                    )
                     navController.navigate(
                         routeBuilder(
                             NavigationItem.AddLaundry.route,
