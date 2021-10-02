@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -28,14 +27,16 @@ fun LaundryHistoryScreen(viewModel: LaundryHistoryViewModel) {
     Column {
         Text(
             "Clothes Collected", style = TextStyle(
-                color = Color.White,
                 fontSize = 28.sp,
                 textAlign = TextAlign.Center
             ), modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp, vertical = 8.dp)
         )
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier
+                .clip(RoundedCornerShape(32.dp))
+        ) {
             itemsIndexed(laundryHistory) { index, laundryItem ->
                 LaundryHistoryItemCard(laundry = laundryItem)
             }

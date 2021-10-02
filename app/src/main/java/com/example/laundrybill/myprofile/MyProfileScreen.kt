@@ -1,7 +1,8 @@
 package com.example.laundrybill.myprofile
 
 import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -19,7 +20,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.laundrybill.NavigationItem
 import com.example.laundrybill.database.Laundry
+import com.example.laundrybill.routeBuilder
 
 @Composable
 fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewModel) {
@@ -44,7 +45,6 @@ fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewMo
         Text(
             "Total Money Spent: \n₹ $moneySpent",
             style = TextStyle(
-                color = Color.LightGray,
                 fontSize = 32.sp,
                 textAlign = TextAlign.Center
             ), modifier = Modifier
@@ -54,7 +54,6 @@ fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewMo
         Text(
             "Pending Bill: ₹ $pendingBillAmount",
             style = TextStyle(
-                color = Color.DarkGray,
                 fontSize = 24.sp,
                 textAlign = TextAlign.Center
             ), modifier = Modifier
@@ -71,7 +70,6 @@ fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewMo
             Text(
                 "Pending",
                 style = TextStyle(
-                    color = Color.White,
                     fontSize = 28.sp,
                     textAlign = TextAlign.Center
                 ), modifier = Modifier
@@ -85,17 +83,36 @@ fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewMo
                 }
             }
         }
-        Button(
-            onClick = {
-                navController.navigate(NavigationItem.AddLaundry.route)
-            },
-            shape = CircleShape, modifier = Modifier
-                .align(Alignment.End)
-                .padding(24.dp)
-                .size(60.dp)
-        ) {
-            Icon(Icons.Default.Add, contentDescription = "Add Cloth")
-
+        Row {
+            val isDarkMode = isSystemInDarkTheme()
+            Button(
+                onClick = {
+                    if (isDarkMode) {
+                        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    } else {
+                        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    }
+                },
+                shape = CircleShape, modifier = Modifier
+                    .padding(24.dp)
+            ) {
+                if (isSystemInDarkTheme()) {
+                    Text("Light Mode", style = TextStyle(fontSize = 20.sp))
+                } else {
+                    Text("Dark Mode", style = TextStyle(fontSize = 20.sp))
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Button(
+                onClick = {
+                    navController.navigate(NavigationItem.AddLaundry.route)
+                },
+                shape = CircleShape, modifier = Modifier
+                    .padding(24.dp)
+                    .size(60.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add Cloth")
+            }
         }
 
     }
@@ -150,8 +167,8 @@ fun LaundryItemCard(
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 Button(onClick = {
-                    Log.i("myInfo", "Button Edit - ${routeBuilder(laundry.itemId)}")
-                    navController.navigate(routeBuilder(laundry.itemId))
+                    Log.i("myInfo", "Button Edit - ${routeBuilder(NavigationItem.AddLaundry.route, laundry.itemId)}")
+                    navController.navigate(routeBuilder(NavigationItem.AddLaundry.route, laundry.itemId))
                 }) {
                     Icon(Icons.Default.Edit, contentDescription = "Edit")
                 }
@@ -159,8 +176,4 @@ fun LaundryItemCard(
         }
 
     }
-}
-
-fun routeBuilder(itemId: Long): String {
-    return (NavigationItem.AddLaundry.route + "?itemId=" + itemId.toString())
 }

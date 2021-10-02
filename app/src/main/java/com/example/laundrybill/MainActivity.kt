@@ -1,5 +1,7 @@
 package com.example.laundrybill
 
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -47,6 +49,13 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val screenSize = resources.configuration.screenLayout and
+                Configuration.SCREENLAYOUT_SIZE_MASK
+
+        if (screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+        }
 
         val application = requireNotNull(this).application
         val dataSource = LaundryDatabase.getInstance(application).laundryDao
@@ -186,8 +195,7 @@ fun DrawerItem(item: NavigationItem, selected: Boolean, onItemClick: (Navigation
         Spacer(modifier = Modifier.width(7.dp))
         Text(
             text = item.title,
-            fontSize = 18.sp,
-            color = Color.White
+            fontSize = 18.sp
         )
     }
 }

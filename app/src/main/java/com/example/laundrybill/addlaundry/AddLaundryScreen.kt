@@ -42,7 +42,6 @@ fun AddLaundryScreen(
         if (itemId == -1L) {
             Text(
                 text = "Add Clothes", style = TextStyle(
-                    color = Color.LightGray,
                     fontSize = 32.sp,
                     textAlign = TextAlign.Center
                 ), modifier = Modifier
@@ -52,7 +51,6 @@ fun AddLaundryScreen(
         } else {
             Text(
                 "Edit", style = TextStyle(
-                    color = Color.LightGray,
                     fontSize = 32.sp,
                     textAlign = TextAlign.Center
                 ), modifier = Modifier
@@ -70,7 +68,6 @@ fun AddLaundryScreen(
         ) {
             Text(
                 "Date of Collection", style = TextStyle(
-                    color = Color.LightGray,
                     fontSize = 18.sp
                 ), modifier = Modifier
                     .padding(4.dp)
@@ -123,7 +120,6 @@ fun ClothListInput(cloth: Pair<String, Double>, clothNumber: Array<Int>, index: 
             Column(modifier = Modifier.padding(6.dp)) {
                 Text(
                     cloth.first, style = TextStyle(
-                        color = Color.LightGray,
                         fontSize = 22.sp
                     ), modifier = Modifier
                         .padding(4.dp)
@@ -131,7 +127,6 @@ fun ClothListInput(cloth: Pair<String, Double>, clothNumber: Array<Int>, index: 
                 )
                 Text(
                     "Rate: ₹ ${cloth.second}", style = TextStyle(
-                        color = Color.DarkGray,
                         fontSize = 14.sp
                     ), modifier = Modifier
                         .padding(4.dp)
@@ -144,7 +139,7 @@ fun ClothListInput(cloth: Pair<String, Double>, clothNumber: Array<Int>, index: 
             if (inputValue.value != "") {
                 try {
                     if (inputValue.value.toInt() > 0) clothNumber[index] = inputValue.value.toInt()
-                    
+
                 } catch (e: Exception) {
                     Toast.makeText(
                         LocalContext.current,
