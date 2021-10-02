@@ -3,28 +3,27 @@ package com.example.laundrybill
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -43,8 +42,7 @@ import com.example.laundrybill.myprofile.MyProfileScreen
 import com.example.laundrybill.myprofile.MyProfileViewModel
 import com.example.laundrybill.myprofile.MyProfileViewModelFactory
 import com.example.laundrybill.ui.theme.LaundryBillTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import androidx.compose.runtime.livedata.observeAsState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,7 +76,10 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            LaundryBillTheme {
+
+            val isDarkMode: Boolean? by myProfileViewModel.isDarkMode.observeAsState()
+            Log.i("myInfo", isDarkMode.toString())
+            LaundryBillTheme(isDarkMode!!) {
                 MainScreen(myProfileViewModel, addLaundryViewModel, laundryHistoryViewModel)
             }
         }
@@ -86,118 +87,67 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(myProfileViewModel: MyProfileViewModel, addLaundryViewModel: AddLaundryViewModel, laundryHistoryViewModel: LaundryHistoryViewModel) {
+fun MainScreen(
+    myProfileViewModel: MyProfileViewModel,
+    addLaundryViewModel: AddLaundryViewModel,
+    laundryHistoryViewModel: LaundryHistoryViewModel
+) {
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
 
-    Scaffold(
-        scaffoldState = scaffoldState,
-        topBar = { TopBar(scope = scope, scaffoldState = scaffoldState) },
-        drawerBackgroundColor = Color.Blue,
-        drawerContent = {
-            Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
-        },
-    ) {
-        Navigation(navController, myProfileViewModel, addLaundryViewModel, laundryHistoryViewModel)
-    }
-}
-
-@Composable
-fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState) {
-    TopAppBar(
-        title = { Text(text = stringResource(R.string.app_name), fontSize = 18.sp) },
-        navigationIcon = {
-            IconButton(onClick = {
-                scope.launch {
-                    scaffoldState.drawerState.open()
-                }
-            }) {
-                Icon(Icons.Filled.Menu, "Navigation Menu")
-            }
-        },
-        backgroundColor = Color.Blue,
-        contentColor = Color.White
-    )
-}
-
-@Composable
-fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: NavController) {
     val items = listOf(
         NavigationItem.MyProfile,
         NavigationItem.LaundryHistory
     )
-    Column(
-        modifier = Modifier
-            .background(Color.White)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.2f)
-                .background(colorResource(id = R.color.purple_500)),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "Menu",
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(12.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-        }
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(5.dp)
-        )
 
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
-        items.forEach { item ->
-            DrawerItem(item = item, selected = currentRoute == item.route, onItemClick = {
-                navController.navigate(item.route) {
-                    navController.graph.startDestinationRoute?.let { route ->
-                        popUpTo(route) {
-                            saveState = true
-                        }
-                    }
-                    // Avoid multiple copies of the same destination when
-                    // reselecting the same item
-                    launchSingleTop = true
-                    // Restore state when reselecting a previously selected item
-                    restoreState = true
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = { TopBar() },
+        bottomBar = {
+            BottomNavigation {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
+
+                items.forEach { navigationItem ->
+                    BottomNavigationItem(
+                        selected = currentDestination?.hierarchy?.any { it.route == navigationItem.route } == true,
+                        icon = {
+                            if (navigationItem == NavigationItem.MyProfile) Icon(
+                                Icons.Filled.AccountCircle,
+                                contentDescription = "My Profile",
+                            ) else Icon(Icons.Filled.List, contentDescription = "Laundry History")
+                        },
+                        onClick = {
+                            navController.navigate(navigationItem.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        })
                 }
-            })
-            scope.launch {
-                scaffoldState.drawerState.close()
             }
         }
-        Spacer(modifier = Modifier.weight(1f))
+    ) {
+        Navigation(
+            navController,
+            myProfileViewModel,
+            addLaundryViewModel,
+            laundryHistoryViewModel,
+            it
+        )
     }
 }
 
 @Composable
-fun DrawerItem(item: NavigationItem, selected: Boolean, onItemClick: (NavigationItem) -> Unit) {
-    val background = if (selected) R.color.black else android.R.color.transparent
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = { onItemClick(item) })
-            .height(45.dp)
-            .background(colorResource(id = background))
-            .padding(start = 10.dp)
-    ) {
-        Spacer(modifier = Modifier.width(7.dp))
-        Text(
-            text = item.title,
-            fontSize = 18.sp
-        )
-    }
+fun TopBar() {
+    TopAppBar(
+        title = { Text(text = stringResource(R.string.app_name), fontSize = 18.sp) },
+        backgroundColor = Color.Blue,
+        contentColor = Color.White
+    )
 }
 
 @Composable
@@ -205,9 +155,14 @@ fun Navigation(
     navController: NavHostController,
     myProfileViewModel: MyProfileViewModel,
     addLaundryViewModel: AddLaundryViewModel,
-    historyViewModel: LaundryHistoryViewModel
+    historyViewModel: LaundryHistoryViewModel,
+    innerPadding: PaddingValues
 ) {
-    NavHost(navController, startDestination = NavigationItem.MyProfile.route) {
+    NavHost(
+        navController,
+        startDestination = NavigationItem.MyProfile.route,
+        Modifier.padding(innerPadding)
+    ) {
         composable(NavigationItem.MyProfile.route) {
             MyProfileScreen(navController, myProfileViewModel)
         }

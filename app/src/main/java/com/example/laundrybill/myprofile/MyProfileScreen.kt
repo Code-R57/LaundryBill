@@ -40,6 +40,7 @@ fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewMo
     val pendingLaundry: List<Laundry> by viewModel.pendingLaundryList.observeAsState(listOf())
     val pendingBillAmount: Double by viewModel.pendingAmount.observeAsState(0.00)
     val moneySpent: Double by viewModel.totalAmount.observeAsState(0.00)
+    val viewMode: Boolean? by viewModel.isDarkMode.observeAsState()
 
     Column {
         Text(
@@ -87,16 +88,12 @@ fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewMo
             val isDarkMode = isSystemInDarkTheme()
             Button(
                 onClick = {
-                    if (isDarkMode) {
-                        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    } else {
-                        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    }
+                    viewModel.switchMode()
                 },
                 shape = CircleShape, modifier = Modifier
                     .padding(24.dp)
             ) {
-                if (isSystemInDarkTheme()) {
+                if (viewMode == true) {
                     Text("Light Mode", style = TextStyle(fontSize = 20.sp))
                 } else {
                     Text("Dark Mode", style = TextStyle(fontSize = 20.sp))

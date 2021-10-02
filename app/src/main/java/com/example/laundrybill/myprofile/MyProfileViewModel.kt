@@ -30,6 +30,10 @@ class MyProfileViewModel(val database: LaundryDao, application: Application) : V
     val totalAmount: LiveData<Double>
         get() = _totalAmount
 
+    private var _isDarkMode = MutableLiveData<Boolean>()
+    val isDarkMode: LiveData<Boolean>
+        get() = _isDarkMode
+
     var collectedLaundryList : List<Laundry>? = listOf()
 
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
@@ -48,9 +52,7 @@ class MyProfileViewModel(val database: LaundryDao, application: Application) : V
 
     private suspend fun getPendingList(): List<Laundry>? {
         return withContext(Dispatchers.IO) {
-            var laundryList: List<Laundry>?
-            laundryList = database.getPendingLaundryItem()
-            return@withContext laundryList
+            return@withContext database.getPendingLaundryItem()
         }
     }
 
@@ -71,6 +73,14 @@ class MyProfileViewModel(val database: LaundryDao, application: Application) : V
             laundry.status = "Collected"
             update(laundry)
         }
+    }
+
+    init {
+        _isDarkMode.value = true
+    }
+
+    fun switchMode() {
+        _isDarkMode.value = _isDarkMode.value != true
     }
 
     fun initialize() {
