@@ -41,6 +41,7 @@ import com.example.laundrybill.myprofile.MyProfileScreen
 import com.example.laundrybill.myprofile.MyProfileViewModel
 import com.example.laundrybill.myprofile.MyProfileViewModelFactory
 import com.example.laundrybill.ui.theme.LaundryBillTheme
+import com.example.laundrybill.ui.theme.Purple500
 
 class MainActivity : ComponentActivity() {
     @ExperimentalComposeUiApi
@@ -104,7 +105,7 @@ fun MainScreen(
         scaffoldState = scaffoldState,
         topBar = { TopBar() },
         bottomBar = {
-            BottomNavigation {
+            BottomNavigation(contentColor = Color.White, backgroundColor = Purple500) {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
 
@@ -125,7 +126,7 @@ fun MainScreen(
                                 launchSingleTop = true
                                 restoreState = true
                             }
-                        })
+                        }, label = { Text(navigationItem.label) })
                 }
             }
         }
@@ -144,8 +145,8 @@ fun MainScreen(
 fun TopBar() {
     TopAppBar(
         title = { Text(text = stringResource(R.string.app_name), fontSize = 18.sp) },
-        backgroundColor = Color.Blue,
-        contentColor = Color.White
+        backgroundColor = Purple500,
+        contentColor = Color.White,
     )
 }
 
@@ -189,8 +190,8 @@ fun Navigation(
 }
 
 
-sealed class NavigationItem(var route: String, var title: String) {
+sealed class NavigationItem(var route: String, val label: String) {
     object MyProfile : NavigationItem("myProfile", "My Profile")
     object LaundryHistory : NavigationItem("laundryHistory", "Laundry History")
-    object AddLaundry : NavigationItem("addLaundry", "Add/Edit Laundry")
+    object AddLaundry : NavigationItem("addLaundry", "Add/Edit")
 }

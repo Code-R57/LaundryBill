@@ -1,13 +1,11 @@
 package com.example.laundrybill.addlaundry
 
 import android.widget.Toast
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.*
@@ -34,6 +32,7 @@ import com.example.laundrybill.convertDateToIsoFormat
 import com.example.laundrybill.convertIsoFormatToDate
 import com.example.laundrybill.database.Laundry
 import com.example.laundrybill.dateFormatter
+import com.example.laundrybill.ui.theme.Purple200
 
 @ExperimentalComposeUiApi
 @Composable
@@ -54,8 +53,7 @@ fun AddLaundryScreen(
             .fillMaxWidth()
     ) {
         val date = convertIsoFormatToDate(if (currentDate != null) currentDate!! else "01 01 2021")
-        val inputValue: MutableState<String> =
-            remember { mutableStateOf(date) }
+        remember { mutableStateOf(date) }
 
         if (itemId == -1L) {
             Text(
@@ -94,14 +92,13 @@ fun AddLaundryScreen(
             val context = LocalContext.current
             Button(onClick = {
                 MaterialDialog(context).show {
-                    datePicker { dialog, date ->
-                        inputValue.value = dateFormatter(date.dayOfMonth, date.month, date.year)
+                    datePicker { _, date ->
+                        laundryItem.collectionDate = dateFormatter(date.dayOfMonth, date.month, date.year)
                     }
                 }
             }, modifier = Modifier.padding(8.dp)) {
                 Icon(Icons.Default.DateRange, "Calendar")
             }
-            laundryItem.collectionDate = convertDateToIsoFormat(inputValue.value)
         }
         Button(
             onClick = {
