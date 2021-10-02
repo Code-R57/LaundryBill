@@ -1,6 +1,8 @@
 package com.example.laundrybill
 
 import android.util.Log
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun routeBuilder(route: String, itemId: Long): String {
     return ("$route?itemId=$itemId")
@@ -22,4 +24,14 @@ fun convertIsoFormatToDate(convertedDate: String): String {
         date = if(index == 0) item else "$item/$date"
     }
     return date
+}
+
+fun dateFormatter(milliseconds : Long?) : String?{
+    milliseconds?.let{
+        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+        val calendar: Calendar = Calendar.getInstance()
+        calendar.timeInMillis = it
+        return formatter.format(calendar.time)
+    }
+    return null
 }
