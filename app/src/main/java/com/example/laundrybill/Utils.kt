@@ -26,12 +26,11 @@ fun convertIsoFormatToDate(convertedDate: String): String {
     return date
 }
 
-fun dateFormatter(milliseconds : Long?) : String?{
-    milliseconds?.let{
-        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.US)
-        val calendar: Calendar = Calendar.getInstance()
-        calendar.timeInMillis = it
-        return formatter.format(calendar.time)
-    }
-    return null
+fun dateFormatter(day: Int, month: Int, year: Int): String {
+    var result = ""
+    result += "$year"
+    result += if(month < 9) " 0${month+1}" else " ${month+1}"
+    result += if(day < 10) " 0${day}" else " $day"
+    Log.i("myInfo", result)
+    return result
 }

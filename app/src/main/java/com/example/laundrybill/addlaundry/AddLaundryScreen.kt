@@ -5,9 +5,9 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -22,10 +22,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.afollestad.date.dayOfMonth
+import com.afollestad.date.month
+import com.afollestad.date.year
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.datetime.datePicker
 import com.example.laundrybill.NavigationItem
 import com.example.laundrybill.convertDateToIsoFormat
 import com.example.laundrybill.convertIsoFormatToDate
 import com.example.laundrybill.database.Laundry
+import com.example.laundrybill.dateFormatter
 
 @ExperimentalComposeUiApi
 @Composable
@@ -78,16 +84,20 @@ fun AddLaundryScreen(
         ) {
             Text(
                 "Date of Collection", style = TextStyle(
-                    fontSize = 18.sp
+                    fontSize = 22.sp
                 ), modifier = Modifier
                     .padding(4.dp)
-                    .width(115.dp)
                     .padding(horizontal = 6.dp)
             )
-            inputValue.value.let {
-                OutlinedTextField(value = it, onValueChange = { newValue ->
-                    inputValue.value = newValue
-                })
+            val context = LocalContext.current
+            Button(onClick = {
+                MaterialDialog(context).show {
+                    datePicker { dialog, date ->
+                        inputValue.value = dateFormatter(date.dayOfMonth, date.month, date.year)
+                    }
+                }
+            }, modifier = Modifier.padding(8.dp)) {
+                Icon(Icons.Default.DateRange, "Calendar")
             }
             laundryItem.collectionDate = convertDateToIsoFormat(inputValue.value)
         }
