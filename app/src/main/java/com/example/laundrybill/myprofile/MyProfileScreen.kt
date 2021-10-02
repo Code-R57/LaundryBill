@@ -1,7 +1,6 @@
 package com.example.laundrybill.myprofile
 
 import android.util.Log
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,13 +21,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.laundrybill.NavigationItem
+import com.example.laundrybill.convertIsoFormatToDate
 import com.example.laundrybill.database.Laundry
 import com.example.laundrybill.routeBuilder
 
@@ -129,8 +128,9 @@ fun LaundryItemCard(
     ) {
         Column(Modifier.padding(16.dp)) {
 
+            Log.i("myInfo", laundry.collectionDate + "  "+ convertIsoFormatToDate(laundry.collectionDate))
             Text(
-                laundry.collectionDate,
+                convertIsoFormatToDate(laundry.collectionDate),
                 style = TextStyle(fontSize = 24.sp), modifier = Modifier.padding(6.dp)
             )
 
@@ -164,8 +164,21 @@ fun LaundryItemCard(
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 Button(onClick = {
-                    Log.i("myInfo", "Button Edit - ${routeBuilder(NavigationItem.AddLaundry.route, laundry.itemId)}")
-                    navController.navigate(routeBuilder(NavigationItem.AddLaundry.route, laundry.itemId))
+                    Log.i(
+                        "myInfo",
+                        "Button Edit - ${
+                            routeBuilder(
+                                NavigationItem.AddLaundry.route,
+                                laundry.itemId
+                            )
+                        }"
+                    )
+                    navController.navigate(
+                        routeBuilder(
+                            NavigationItem.AddLaundry.route,
+                            laundry.itemId
+                        )
+                    )
                 }) {
                     Icon(Icons.Default.Edit, contentDescription = "Edit")
                 }

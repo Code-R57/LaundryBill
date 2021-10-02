@@ -15,6 +15,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.laundrybill.convertIsoFormatToDate
 import com.example.laundrybill.database.Laundry
 
 @Composable
@@ -54,7 +55,7 @@ fun LaundryHistoryItemCard(laundry: Laundry) {
     ) {
         Column(Modifier.padding(16.dp)) {
             Text(
-                laundry.collectionDate,
+                convertIsoFormatToDate(laundry.collectionDate),
                 style = TextStyle(fontSize = 24.sp),
                 modifier = Modifier.padding(6.dp)
             )

@@ -10,7 +10,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -18,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.laundrybill.NavigationItem
+import com.example.laundrybill.convertDateToIsoFormat
+import com.example.laundrybill.convertIsoFormatToDate
 import com.example.laundrybill.database.Laundry
 
 @Composable
@@ -36,9 +37,11 @@ fun AddLaundryScreen(
             .padding(4.dp)
             .fillMaxWidth()
     ) {
-        val inputValue: MutableState<String>?
-        inputValue = remember { mutableStateOf(laundryItem.collectionDate) }
-        Log.i("myInfo", laundryItem.collectionDate)
+        Log.i("myInfo", laundryItem.collectionDate +"   " + convertIsoFormatToDate(laundryItem.collectionDate))
+        val date = convertIsoFormatToDate(laundryItem.collectionDate)
+        val inputValue: MutableState<String> =
+            remember { mutableStateOf(date) }
+
         if (itemId == -1L) {
             Text(
                 text = "Add Clothes", style = TextStyle(
@@ -79,7 +82,7 @@ fun AddLaundryScreen(
                     inputValue.value = newValue
                 })
             }
-            laundryItem.collectionDate = inputValue.value
+            laundryItem.collectionDate = convertDateToIsoFormat(inputValue.value)
         }
         Button(
             onClick = {

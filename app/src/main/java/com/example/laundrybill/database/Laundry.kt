@@ -12,7 +12,7 @@ data class Laundry(
     var itemId: Long = 0L,
 
     @ColumnInfo(name = "collection_date")
-    var collectionDate: String = "01/01/2021",
+    var collectionDate: String = "2021 01 01",
 
     @ColumnInfo(name = "total_clothes")
     var totalClothes: Int = 0,
