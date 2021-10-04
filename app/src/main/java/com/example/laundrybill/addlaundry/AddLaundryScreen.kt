@@ -70,7 +70,6 @@ fun AddLaundryScreen(
                     .padding(6.dp)
             )
         }
-
         clothList.forEachIndexed { index, cloth ->
             ClothListInput(cloth, clothNumber, index)
         }

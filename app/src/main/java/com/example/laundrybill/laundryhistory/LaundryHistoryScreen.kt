@@ -1,5 +1,7 @@
 package com.example.laundrybill.laundryhistory
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -11,7 +13,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,16 +58,19 @@ fun LaundryHistoryItemCard(laundry: Laundry) {
             .fillMaxWidth()
             .padding(8.dp)
             .clip(RoundedCornerShape(32.dp))
+            .border(border = BorderStroke(1.dp, Color.Blue), shape = RoundedCornerShape(32.dp))
+
     ) {
         Column(Modifier.padding(16.dp)) {
             Text(
                 convertIsoFormatToDate(laundry.collectionDate),
                 style = TextStyle(fontSize = 24.sp),
-                modifier = Modifier.padding(6.dp)
+                modifier = Modifier.padding(6.dp),
+                fontWeight = FontWeight.SemiBold
             )
 
-            stringToIntArray(laundry.clothesQuantity).forEachIndexed { index, number->
-                if(number != 0){
+            stringToIntArray(laundry.clothesQuantity).forEachIndexed { index, number ->
+                if (number != 0) {
                     Text(
                         clothList[index].first + " x$number = " + "     ₹ ${number * clothList[index].second}",
                         style = TextStyle(fontSize = 16.sp), modifier = Modifier.padding(6.dp)
