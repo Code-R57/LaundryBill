@@ -19,7 +19,7 @@ class NotificationBroadcast : BroadcastReceiver() {
             PendingIntent.getActivity(context, System.currentTimeMillis().toInt(), i, 0)
 
         val builder = NotificationCompat.Builder(context!!, "laundryBill")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.mipmap.app_icon_foreground)
             .setContentTitle(context.getString(R.string.app_name))
             .setContentText("Laundry Collection Day")
             .setAutoCancel(true)

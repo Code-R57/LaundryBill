@@ -2,6 +2,7 @@ package com.example.laundrybill
 
 import android.app.AlarmManager
 import android.content.Context
+import androidx.compose.foundation.Image
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -10,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -81,7 +83,13 @@ fun MainScreen(
 @Composable
 fun TopBar() {
     TopAppBar(
-        title = { Text(text = stringResource(R.string.app_name), fontSize = 18.sp) },
+        title = {
+            Image(
+                painterResource(id = R.mipmap.app_icon_foreground),
+                contentDescription = "App Icon"
+            )
+            Text(text = stringResource(R.string.app_name), fontSize = 18.sp)
+        },
         backgroundColor = Purple500,
         contentColor = Color.White,
     )
