@@ -51,12 +51,12 @@ class AddLaundryViewModel(val database: LaundryDao, application: Application) : 
         }
     }
 
-    private suspend fun getItem(itemId: Long): Laundry {
-        return withContext(Dispatchers.IO) {
+    private fun getItem(itemId: Long): Laundry {
+        return runBlocking(Dispatchers.IO) {
             if (itemId != -1L) {
-                return@withContext database.getLaundryItem(itemId)
+                return@runBlocking database.getLaundryItem(itemId)
             } else {
-                return@withContext Laundry()
+                return@runBlocking Laundry()
             }
         }
     }

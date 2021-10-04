@@ -28,7 +28,6 @@ fun MainScreen(
     laundryHistoryViewModel: LaundryHistoryViewModel
 ) {
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
-    val scope = rememberCoroutineScope()
     val navController = rememberNavController()
 
     val items = listOf(

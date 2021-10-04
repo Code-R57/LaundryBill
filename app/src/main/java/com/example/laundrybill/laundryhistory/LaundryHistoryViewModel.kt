@@ -22,8 +22,6 @@ class LaundryHistoryViewModel(val database: LaundryDao, application: Application
     val collectedLaundryList: LiveData<List<Laundry>>
         get() = _collectedLaundryList
 
-    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-
     private suspend fun getCollectedList(): List<Laundry>? {
         return withContext(Dispatchers.IO) {
             return@withContext database.getCollectedLaundryItem()

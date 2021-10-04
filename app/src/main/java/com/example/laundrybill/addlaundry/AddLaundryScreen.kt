@@ -1,6 +1,5 @@
 package com.example.laundrybill.addlaundry
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -41,6 +40,7 @@ import com.example.laundrybill.convertIsoFormatToDate
 import com.example.laundrybill.database.Laundry
 import com.example.laundrybill.dateFormatter
 import com.example.laundrybill.stringToIntArray
+import java.util.*
 
 @ExperimentalComposeUiApi
 @Composable
@@ -53,7 +53,7 @@ fun AddLaundryScreen(
     viewModel.initialize(itemId)
     val laundryItem: Laundry by viewModel.laundryItem.observeAsState(Laundry())
     val currentDate: String? by viewModel.currentDate.observeAsState()
-    var clothNumber = IntArray(clothList.size) { 0 }
+    val clothNumber = IntArray(clothList.size) { 0 }
 
     Column(
         Modifier
@@ -82,18 +82,17 @@ fun AddLaundryScreen(
                     .padding(6.dp)
             )
         }
-        val values = stringToIntArray(laundryItem.clothesQuantity)
         LazyColumn(modifier = Modifier.fillMaxWidth()) {
             item {
                 CalendarInput(laundryItem)
             }
-
+            val values = stringToIntArray(laundryItem.clothesQuantity)
             itemsIndexed(clothList) { index, cloth ->
-                ClothListInput(cloth, clothNumber, index)
+                ClothListInput(cloth, clothNumber, index, values[index].toString())
             }
 
             item {
-                Row{
+                Row {
                     Spacer(modifier = Modifier.weight(1f))
                     Button(
                         onClick = {
@@ -104,7 +103,6 @@ fun AddLaundryScreen(
                                 laundryItem.totalClothes += number
                                 laundryItem.totalAmount += (clothList[index].second * number)
                                 laundryItem.clothesQuantity += "$number "
-                                Log.i("myInfo", laundryItem.clothesQuantity)
                             }
                             if (itemId == -1L) {
                                 viewModel.onAddClicked(laundryItem)
@@ -145,7 +143,7 @@ private fun CalendarInput(laundryItem: Laundry) {
         val context = LocalContext.current
         Button(onClick = {
             MaterialDialog(context).show {
-                datePicker { _, date ->
+                datePicker(minDate = Calendar.getInstance()) { _, date ->
                     laundryItem.collectionDate =
                         dateFormatter(date.dayOfMonth, date.month, date.year)
                 }
@@ -158,8 +156,8 @@ private fun CalendarInput(laundryItem: Laundry) {
 
 @ExperimentalComposeUiApi
 @Composable
-fun ClothListInput(cloth: Pair<String, Double>, clothNumber: IntArray, index: Int) {
-    val inputValue = remember { mutableStateOf("") }
+fun ClothListInput(cloth: Pair<String, Double>, clothNumber: IntArray, index: Int, value: String) {
+    val inputValue = remember { mutableStateOf(value) }
     Box(contentAlignment = Alignment.Center) {
         Row(
             Modifier
@@ -216,6 +214,6 @@ val clothList = listOf(
     Pair("Bed Sheet", 15.00),
     Pair("Pillow Cover", 8.00),
     Pair("Towel", 10.00),
-    Pair("Jacket", 15.00),
+    Pair("Jacket", 18.00),
     Pair("Blanket", 40.00)
 )

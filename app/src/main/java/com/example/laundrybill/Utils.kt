@@ -1,7 +1,5 @@
 package com.example.laundrybill
 
-import android.util.Log
-
 fun routeBuilder(route: String, itemId: Long): String {
     return ("$route?itemId=$itemId")
 }
@@ -29,15 +27,22 @@ fun dateFormatter(day: Int, month: Int, year: Int): String {
     result += "$year"
     result += if (month < 9) " 0${month + 1}" else " ${month + 1}"
     result += if (day < 10) " 0${day}" else " $day"
-    Log.i("myInfo", result)
     return result
 }
 
 fun stringToIntArray(string: String): MutableList<Int> {
     val stringList: List<String> = string.trim().split(" ")
-    var resultArray: MutableList<Int> = mutableListOf()
+    val resultArray: MutableList<Int> = mutableListOf()
     stringList.forEach {
         resultArray.add(it.toInt())
     }
     return resultArray
+}
+
+fun intArrayToString(intArray: IntArray): String {
+    var resultString = ""
+    intArray.forEach {
+        resultString += "$it "
+    }
+    return resultString.trim()
 }

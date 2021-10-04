@@ -37,8 +37,6 @@ class MyProfileViewModel(val database: LaundryDao, application: Application) : V
 
     var collectedLaundryList: List<Laundry>? = listOf()
 
-    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-
     private suspend fun delete(itemId: Long) {
         return withContext(Dispatchers.IO) {
             database.deleteLaundryItem(itemId)

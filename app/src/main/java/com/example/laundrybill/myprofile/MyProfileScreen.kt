@@ -2,7 +2,6 @@ package com.example.laundrybill.myprofile
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -142,8 +141,8 @@ fun LaundryItemCard(
                 fontWeight = FontWeight.SemiBold
             )
 
-            stringToIntArray(laundry.clothesQuantity).forEachIndexed { index, number->
-                if(number != 0){
+            stringToIntArray(laundry.clothesQuantity).forEachIndexed { index, number ->
+                if (number != 0) {
                     Text(
                         clothList[index].first + " x$number: " + "  ₹ ${number * clothList[index].second}",
                         style = TextStyle(fontSize = 16.sp), modifier = Modifier.padding(6.dp)
@@ -160,7 +159,9 @@ fun LaundryItemCard(
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
                     "Total Bill: ₹ " + laundry.totalAmount,
-                    style = TextStyle(fontSize = 16.sp), modifier = Modifier.padding(6.dp),fontWeight = FontWeight.SemiBold
+                    style = TextStyle(fontSize = 16.sp),
+                    modifier = Modifier.padding(6.dp),
+                    fontWeight = FontWeight.SemiBold
                 )
             }
             Row(Modifier.padding(vertical = 4.dp, horizontal = 2.dp)) {

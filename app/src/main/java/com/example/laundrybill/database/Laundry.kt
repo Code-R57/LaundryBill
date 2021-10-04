@@ -3,6 +3,8 @@ package com.example.laundrybill.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.laundrybill.addlaundry.clothList
+import com.example.laundrybill.intArrayToString
 
 @Entity(tableName = "laundry_data")
 data class Laundry(
@@ -24,5 +26,5 @@ data class Laundry(
     var status: String = "Pending",
 
     @ColumnInfo(name = "clothes_quantity")
-    var clothesQuantity: String = "0 0 0 0 0 0 0 0 0"
+    var clothesQuantity: String = intArrayToString(IntArray(clothList.size) { 0 })
 )

@@ -101,8 +101,8 @@ fun Navigation(
                 type = NavType.LongType
                 defaultValue = -1L
             })
-        ) {
-            it.arguments?.getLong("itemId")?.let {
+        ) { navBackStackEntry ->
+            navBackStackEntry.arguments?.getLong("itemId")?.let {
                 AddLaundryScreen(
                     itemId = it,
                     viewModel = addLaundryViewModel,
