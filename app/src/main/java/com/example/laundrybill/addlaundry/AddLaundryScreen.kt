@@ -141,9 +141,12 @@ private fun CalendarInput(laundryItem: Laundry) {
                 .padding(horizontal = 6.dp)
         )
         val context = LocalContext.current
+        val date = laundryItem.collectionDate.split(" ")
+        val currentDate: Calendar = Calendar.getInstance()
+        currentDate.set(date[0].toInt(), date[1].toInt()-1, date[2].toInt())
         Button(onClick = {
             MaterialDialog(context).show {
-                datePicker(minDate = Calendar.getInstance()) { _, date ->
+                datePicker(minDate = Calendar.getInstance(), currentDate = currentDate) { _, date ->
                     laundryItem.collectionDate =
                         dateFormatter(date.dayOfMonth, date.month, date.year)
                 }

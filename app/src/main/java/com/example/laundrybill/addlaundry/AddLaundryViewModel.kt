@@ -35,9 +35,8 @@ class AddLaundryViewModel(val database: LaundryDao, application: Application) : 
         _currentDate.value = year.toString()
         _currentDate.value += if (month < 10) " 0$month" else " $month"
         _currentDate.value += if (day < 10) " 0$day" else " $day"
+        c.set(1,2,3)
     }
-
-    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
     private suspend fun insert(laundry: Laundry) {
         return withContext(Dispatchers.IO) {
