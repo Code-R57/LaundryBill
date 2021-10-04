@@ -23,10 +23,13 @@ interface LaundryDao {
     @Query("SELECT * FROM laundry_data WHERE status = 'Pending' ORDER BY collection_date ASC")
     fun getPendingLaundryItem(): List<Laundry>?
 
-    @Query("SELECT * FROM laundry_data WHERE status = 'Collected' ORDER BY collection_date ASC")
+    @Query("SELECT * FROM laundry_data WHERE status = 'Collected' ORDER BY collection_date DESC")
     fun getCollectedLaundryItem(): List<Laundry>?
 
     @Query("SELECT * FROM laundry_data WHERE item_id = :itemId")
     fun getLaundryItem(itemId: Long): Laundry
+
+    @Query("SELECT * FROM laundry_data ORDER BY collection_date ASC LIMIT 1")
+    fun getRecentLaundryItem(): Laundry
 
 }

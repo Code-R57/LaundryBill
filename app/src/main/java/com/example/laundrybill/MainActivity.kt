@@ -1,7 +1,12 @@
 package com.example.laundrybill
 
+import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,6 +36,9 @@ import com.example.laundrybill.myprofile.MyProfileViewModelFactory
 import com.example.laundrybill.ui.theme.LaundryBillTheme
 
 class MainActivity : ComponentActivity() {
+
+    private lateinit var alarmManager: AlarmManager
+
     @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,15 +70,40 @@ class MainActivity : ComponentActivity() {
             LaundryHistoryViewModelFactory(dataSource, application)
         }
 
+        createNotificationChannel()
+
+        alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+
         setContent {
 
             val isDarkMode: Boolean? by myProfileViewModel.isDarkMode.observeAsState()
             LaundryBillTheme(isDarkMode!!) {
-                MainScreen(myProfileViewModel, addLaundryViewModel, laundryHistoryViewModel)
+                MainScreen(
+                    myProfileViewModel,
+                    addLaundryViewModel,
+                    laundryHistoryViewModel,
+                    alarmManager,
+                    this
+                )
             }
         }
     }
 
+    private fun createNotificationChannel() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            val name: CharSequence = "laundryBillNotificationChannel"
+            val description = "Channel for Laundry Bill"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel("laundryBill", name, importance)
+            channel.description = description
+            val notificationManager = getSystemService(NotificationManager::class.java)
+
+            notificationManager.createNotificationChannel(channel)
+        }
+
+    }
 }
 
 
@@ -81,7 +114,8 @@ fun Navigation(
     myProfileViewModel: MyProfileViewModel,
     addLaundryViewModel: AddLaundryViewModel,
     historyViewModel: LaundryHistoryViewModel,
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
+    alarmManager: AlarmManager, context: Context
 ) {
     NavHost(
         navController,
@@ -106,13 +140,14 @@ fun Navigation(
                 AddLaundryScreen(
                     itemId = it,
                     viewModel = addLaundryViewModel,
-                    navController = navController
+                    navController = navController,
+                    alarmManager = alarmManager,
+                    context = context
                 )
             }
         }
     }
 }
-
 
 sealed class NavigationItem(var route: String, val label: String) {
     object MyProfile : NavigationItem("myProfile", "My Profile")

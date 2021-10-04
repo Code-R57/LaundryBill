@@ -1,5 +1,9 @@
 package com.example.laundrybill.addlaundry
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,6 +43,7 @@ import com.example.laundrybill.NavigationItem
 import com.example.laundrybill.convertIsoFormatToDate
 import com.example.laundrybill.database.Laundry
 import com.example.laundrybill.dateFormatter
+import com.example.laundrybill.notification.NotificationBroadcast
 import com.example.laundrybill.stringToIntArray
 import java.util.*
 
@@ -47,7 +52,8 @@ import java.util.*
 fun AddLaundryScreen(
     itemId: Long,
     viewModel: AddLaundryViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    alarmManager: AlarmManager, context: Context
 ) {
 
     viewModel.initialize(itemId)
@@ -118,6 +124,11 @@ fun AddLaundryScreen(
                             if (itemId == -1L) "Add" else "Edit",
                             style = TextStyle(fontSize = 20.sp)
                         )
+                        val calendarDate = Calendar.getInstance()
+                        val ymd = laundryItem.collectionDate.split(" ")
+                        calendarDate.set(ymd[0].toInt(), ymd[1].toInt() - 1, ymd[2].toInt())
+                        if (laundryItem.collectionDate != "2021 01 01")
+                            setNotification(alarmManager, context, calendarDate)
                     }
                 }
             }
@@ -143,10 +154,10 @@ private fun CalendarInput(laundryItem: Laundry) {
         val context = LocalContext.current
         val date = laundryItem.collectionDate.split(" ")
         val currentDate: Calendar = Calendar.getInstance()
-        currentDate.set(date[0].toInt(), date[1].toInt()-1, date[2].toInt())
+        currentDate.set(date[0].toInt(), date[1].toInt() - 1, date[2].toInt())
         Button(onClick = {
             MaterialDialog(context).show {
-                datePicker(minDate = Calendar.getInstance(), currentDate = currentDate) { _, date ->
+                datePicker(minDate = Calendar.getInstance()) { _, date ->
                     laundryItem.collectionDate =
                         dateFormatter(date.dayOfMonth, date.month, date.year)
                 }
@@ -220,3 +231,21 @@ val clothList = listOf(
     Pair("Jacket", 18.00),
     Pair("Blanket", 40.00)
 )
+
+fun setNotification(alarmManager: AlarmManager, context: Context, calendar: Calendar) {
+
+    val intent = Intent(context, NotificationBroadcast::class.java)
+
+    val pendingIntent = PendingIntent.getBroadcast(
+        context,
+        System.currentTimeMillis().toInt(), intent, 0
+    )
+
+    val currentDate = Calendar.getInstance()
+    val difference = Calendar.getInstance()
+    difference.timeInMillis = calendar.timeInMillis - currentDate.timeInMillis
+
+    alarmManager.setExact(
+        AlarmManager.RTC, System.currentTimeMillis() + difference.timeInMillis, pendingIntent
+    )
+}

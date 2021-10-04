@@ -1,12 +1,13 @@
 package com.example.laundrybill
 
+import android.app.AlarmManager
+import android.content.Context
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -25,7 +26,8 @@ import com.example.laundrybill.ui.theme.Purple500
 fun MainScreen(
     myProfileViewModel: MyProfileViewModel,
     addLaundryViewModel: AddLaundryViewModel,
-    laundryHistoryViewModel: LaundryHistoryViewModel
+    laundryHistoryViewModel: LaundryHistoryViewModel,
+    alarmManager: AlarmManager, context: Context
 ) {
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val navController = rememberNavController()
@@ -70,7 +72,8 @@ fun MainScreen(
             myProfileViewModel,
             addLaundryViewModel,
             laundryHistoryViewModel,
-            it
+            it,
+            alarmManager, context
         )
     }
 }
