@@ -1,6 +1,7 @@
 package com.example.laundrybill.myprofile
 
 import android.app.Application
+import android.content.res.Configuration
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -76,7 +77,9 @@ class MyProfileViewModel(val database: LaundryDao, application: Application) : V
     }
 
     init {
-        _isDarkMode.value = true
+        val uiMode =
+            application.applicationContext.resources.configuration.uiMode.and(Configuration.UI_MODE_NIGHT_MASK)
+        _isDarkMode.value = uiMode == Configuration.UI_MODE_NIGHT_YES
     }
 
     fun switchMode() {

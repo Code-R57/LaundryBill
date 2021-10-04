@@ -3,13 +3,22 @@ package com.example.laundrybill.addlaundry
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -27,8 +36,11 @@ import com.afollestad.date.month
 import com.afollestad.date.year
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.datetime.datePicker
-import com.example.laundrybill.*
+import com.example.laundrybill.NavigationItem
+import com.example.laundrybill.convertIsoFormatToDate
 import com.example.laundrybill.database.Laundry
+import com.example.laundrybill.dateFormatter
+import com.example.laundrybill.stringToIntArray
 
 @ExperimentalComposeUiApi
 @Composable
@@ -41,7 +53,7 @@ fun AddLaundryScreen(
     viewModel.initialize(itemId)
     val laundryItem: Laundry by viewModel.laundryItem.observeAsState(Laundry())
     val currentDate: String? by viewModel.currentDate.observeAsState()
-    var clothNumber: Array<Int> = arrayOf(0, 0, 0, 0)
+    var clothNumber = IntArray(clothList.size) { 0 }
 
     Column(
         Modifier
@@ -70,64 +82,85 @@ fun AddLaundryScreen(
                     .padding(6.dp)
             )
         }
-        clothList.forEachIndexed { index, cloth ->
-            ClothListInput(cloth, clothNumber, index)
-        }
-        Row(
-            Modifier
-                .padding(4.dp)
-                .fillMaxWidth()
-        ) {
-            Text(
-                "Date of Collection", style = TextStyle(
-                    fontSize = 22.sp
-                ), modifier = Modifier
-                    .padding(4.dp)
-                    .padding(horizontal = 6.dp)
-            )
-            val context = LocalContext.current
-            Button(onClick = {
-                MaterialDialog(context).show {
-                    datePicker { _, date ->
-                        laundryItem.collectionDate = dateFormatter(date.dayOfMonth, date.month, date.year)
+        val values = stringToIntArray(laundryItem.clothesQuantity)
+        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+            item {
+                CalendarInput(laundryItem)
+            }
+
+            itemsIndexed(clothList) { index, cloth ->
+                ClothListInput(cloth, clothNumber, index)
+            }
+
+            item {
+                Row{
+                    Spacer(modifier = Modifier.weight(1f))
+                    Button(
+                        onClick = {
+                            laundryItem.totalClothes = 0
+                            laundryItem.totalAmount = 0.00
+                            laundryItem.clothesQuantity = ""
+                            clothNumber.forEachIndexed { index, number ->
+                                laundryItem.totalClothes += number
+                                laundryItem.totalAmount += (clothList[index].second * number)
+                                laundryItem.clothesQuantity += "$number "
+                                Log.i("myInfo", laundryItem.clothesQuantity)
+                            }
+                            if (itemId == -1L) {
+                                viewModel.onAddClicked(laundryItem)
+
+                            } else {
+                                viewModel.onEditClicked(laundryItem)
+                            }
+                            navController.navigate(NavigationItem.MyProfile.route)
+                        }, modifier = Modifier
+                            .padding(16.dp), shape = RoundedCornerShape(50)
+                    ) {
+                        Text(
+                            if (itemId == -1L) "Add" else "Edit",
+                            style = TextStyle(fontSize = 20.sp)
+                        )
                     }
                 }
-            }, modifier = Modifier.padding(8.dp)) {
-                Icon(Icons.Default.DateRange, "Calendar")
             }
         }
-        Button(
-            onClick = {
-                laundryItem.totalClothes = 0
-                laundryItem.totalAmount = 0.00
-                laundryItem.clothesQuantity = ""
-                clothNumber.forEachIndexed { index, number ->
-                    laundryItem.totalClothes += number
-                    laundryItem.totalAmount += (clothList[index].second * number)
-                    laundryItem.clothesQuantity += "$number "
-                    Log.i("myInfo", laundryItem.clothesQuantity)
-                }
-                if (itemId == -1L) {
-                    viewModel.onAddClicked(laundryItem)
 
-                } else {
-                    viewModel.onEditClicked(laundryItem)
+    }
+}
+
+@Composable
+private fun CalendarInput(laundryItem: Laundry) {
+    Row(
+        Modifier
+            .padding(4.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            "Date of Collection", style = TextStyle(
+                fontSize = 22.sp
+            ), modifier = Modifier
+                .padding(4.dp)
+                .padding(horizontal = 6.dp)
+        )
+        val context = LocalContext.current
+        Button(onClick = {
+            MaterialDialog(context).show {
+                datePicker { _, date ->
+                    laundryItem.collectionDate =
+                        dateFormatter(date.dayOfMonth, date.month, date.year)
                 }
-                navController.navigate(NavigationItem.MyProfile.route)
-            }, modifier = Modifier
-                .align(Alignment.End)
-                .padding(16.dp)
-        ) {
-            Text(if (itemId == -1L) "Add" else "Edit", style = TextStyle(fontSize = 20.sp))
+            }
+        }, modifier = Modifier.padding(8.dp)) {
+            Icon(Icons.Default.DateRange, "Calendar")
         }
     }
 }
 
 @ExperimentalComposeUiApi
 @Composable
-fun ClothListInput(cloth: Pair<String, Double>, clothNumber: Array<Int>, index: Int) {
-    val inputValue = remember { mutableStateOf( "") }
-    Box {
+fun ClothListInput(cloth: Pair<String, Double>, clothNumber: IntArray, index: Int) {
+    val inputValue = remember { mutableStateOf("") }
+    Box(contentAlignment = Alignment.Center) {
         Row(
             Modifier
                 .padding(4.dp)
@@ -136,7 +169,7 @@ fun ClothListInput(cloth: Pair<String, Double>, clothNumber: Array<Int>, index: 
             Column(modifier = Modifier.padding(6.dp)) {
                 Text(
                     cloth.first, style = TextStyle(
-                        fontSize = 22.sp
+                        fontSize = 18.sp
                     ), modifier = Modifier
                         .padding(4.dp)
                         .width(100.dp)
@@ -150,7 +183,6 @@ fun ClothListInput(cloth: Pair<String, Double>, clothNumber: Array<Int>, index: 
                 )
             }
             val keyboardController = LocalSoftwareKeyboardController.current
-
             OutlinedTextField(value = inputValue.value, onValueChange = { newValue ->
                 inputValue.value = newValue
             }, keyboardOptions = KeyboardOptions(
@@ -177,8 +209,13 @@ fun ClothListInput(cloth: Pair<String, Double>, clothNumber: Array<Int>, index: 
 }
 
 val clothList = listOf(
-    Pair("T-Shirt", 25.00),
-    Pair("Pants", 20.00),
-    Pair("Bed Sheets", 50.00),
-    Pair("Towel", 30.00)
+    Pair("T-Shirt", 10.00),
+    Pair("Shirt", 12.00),
+    Pair("Pant", 12.00),
+    Pair("Jeans", 15.00),
+    Pair("Bed Sheet", 15.00),
+    Pair("Pillow Cover", 8.00),
+    Pair("Towel", 10.00),
+    Pair("Jacket", 15.00),
+    Pair("Blanket", 40.00)
 )

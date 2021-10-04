@@ -38,7 +38,8 @@ fun LaundryHistoryScreen(viewModel: LaundryHistoryViewModel) {
                 textAlign = TextAlign.Center
             ), modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 8.dp)
+                .padding(horizontal = 24.dp, vertical = 8.dp),
+            fontWeight = FontWeight.Bold
         )
         LazyColumn(
             modifier = Modifier
@@ -72,7 +73,7 @@ fun LaundryHistoryItemCard(laundry: Laundry) {
             stringToIntArray(laundry.clothesQuantity).forEachIndexed { index, number ->
                 if (number != 0) {
                     Text(
-                        clothList[index].first + " x$number = " + "     ₹ ${number * clothList[index].second}",
+                        clothList[index].first + " x$number: " + "  ₹ ${number * clothList[index].second}",
                         style = TextStyle(fontSize = 16.sp), modifier = Modifier.padding(6.dp)
                     )
                 }
@@ -88,7 +89,8 @@ fun LaundryHistoryItemCard(laundry: Laundry) {
                 Text(
                     "Total Bill: ₹ " + laundry.totalAmount,
                     style = TextStyle(fontSize = 16.sp),
-                    modifier = Modifier.padding(6.dp)
+                    modifier = Modifier.padding(6.dp),
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         }

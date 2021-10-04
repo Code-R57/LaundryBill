@@ -54,7 +54,8 @@ fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewMo
                 textAlign = TextAlign.Center
             ), modifier = Modifier
                 .fillMaxWidth()
-                .padding(6.dp)
+                .padding(6.dp),
+            fontWeight = FontWeight.Bold
         )
         Text(
             "Pending Bill: ₹ $pendingBillAmount",
@@ -64,7 +65,8 @@ fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewMo
             ), modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp)
-                .padding(bottom = 4.dp)
+                .padding(bottom = 4.dp),
+            fontWeight = FontWeight.SemiBold
         )
 
         Column(
@@ -79,7 +81,8 @@ fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewMo
                     textAlign = TextAlign.Center
                 ), modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 8.dp)
+                    .padding(horizontal = 24.dp, vertical = 8.dp),
+                fontWeight = FontWeight.SemiBold
             )
 
             LazyColumn {
@@ -142,7 +145,7 @@ fun LaundryItemCard(
             stringToIntArray(laundry.clothesQuantity).forEachIndexed { index, number->
                 if(number != 0){
                     Text(
-                        clothList[index].first + " x$number = " + "     ₹ ${number * clothList[index].second}",
+                        clothList[index].first + " x$number: " + "  ₹ ${number * clothList[index].second}",
                         style = TextStyle(fontSize = 16.sp), modifier = Modifier.padding(6.dp)
                     )
                 }
@@ -157,7 +160,7 @@ fun LaundryItemCard(
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
                     "Total Bill: ₹ " + laundry.totalAmount,
-                    style = TextStyle(fontSize = 16.sp), modifier = Modifier.padding(6.dp)
+                    style = TextStyle(fontSize = 16.sp), modifier = Modifier.padding(6.dp),fontWeight = FontWeight.SemiBold
                 )
             }
             Row(Modifier.padding(vertical = 4.dp, horizontal = 2.dp)) {

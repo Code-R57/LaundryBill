@@ -24,5 +24,5 @@ data class Laundry(
     var status: String = "Pending",
 
     @ColumnInfo(name = "clothes_quantity")
-    var clothesQuantity: String = "0 0 0 0"
+    var clothesQuantity: String = "0 0 0 0 0 0 0 0 0"
 )
