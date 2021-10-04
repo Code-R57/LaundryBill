@@ -1,7 +1,7 @@
 package com.example.laundrybill.addlaundry
 
+import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,12 +27,8 @@ import com.afollestad.date.month
 import com.afollestad.date.year
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.datetime.datePicker
-import com.example.laundrybill.NavigationItem
-import com.example.laundrybill.convertDateToIsoFormat
-import com.example.laundrybill.convertIsoFormatToDate
+import com.example.laundrybill.*
 import com.example.laundrybill.database.Laundry
-import com.example.laundrybill.dateFormatter
-import com.example.laundrybill.ui.theme.Purple200
 
 @ExperimentalComposeUiApi
 @Composable
@@ -74,6 +70,7 @@ fun AddLaundryScreen(
                     .padding(6.dp)
             )
         }
+
         clothList.forEachIndexed { index, cloth ->
             ClothListInput(cloth, clothNumber, index)
         }
@@ -104,9 +101,12 @@ fun AddLaundryScreen(
             onClick = {
                 laundryItem.totalClothes = 0
                 laundryItem.totalAmount = 0.00
+                laundryItem.clothesQuantity = ""
                 clothNumber.forEachIndexed { index, number ->
                     laundryItem.totalClothes += number
                     laundryItem.totalAmount += (clothList[index].second * number)
+                    laundryItem.clothesQuantity += "$number "
+                    Log.i("myInfo", laundryItem.clothesQuantity)
                 }
                 if (itemId == -1L) {
                     viewModel.onAddClicked(laundryItem)
@@ -127,7 +127,7 @@ fun AddLaundryScreen(
 @ExperimentalComposeUiApi
 @Composable
 fun ClothListInput(cloth: Pair<String, Double>, clothNumber: Array<Int>, index: Int) {
-    val inputValue = remember { mutableStateOf("0") }
+    val inputValue = remember { mutableStateOf( "") }
     Box {
         Row(
             Modifier

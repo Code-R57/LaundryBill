@@ -26,9 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.laundrybill.NavigationItem
+import com.example.laundrybill.addlaundry.clothList
 import com.example.laundrybill.convertIsoFormatToDate
 import com.example.laundrybill.database.Laundry
 import com.example.laundrybill.routeBuilder
+import com.example.laundrybill.stringToIntArray
 
 @Composable
 fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewModel) {
@@ -132,7 +134,17 @@ fun LaundryItemCard(
                 style = TextStyle(fontSize = 24.sp), modifier = Modifier.padding(6.dp)
             )
 
+            stringToIntArray(laundry.clothesQuantity).forEachIndexed { index, number->
+                if(number != 0){
+                    Text(
+                        clothList[index].first + " x$number = " + "     ₹ ${number * clothList[index].second}",
+                        style = TextStyle(fontSize = 16.sp), modifier = Modifier.padding(6.dp)
+                    )
+                }
+            }
+
             Row {
+
                 Text(
                     "Number of Clothes: " + laundry.totalClothes,
                     style = TextStyle(fontSize = 16.sp), modifier = Modifier.padding(6.dp)

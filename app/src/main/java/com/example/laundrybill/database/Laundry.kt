@@ -21,6 +21,8 @@ data class Laundry(
     var totalAmount: Double = 0.00,
 
     @ColumnInfo(name = "status")
-    var status: String = "Pending"
+    var status: String = "Pending",
 
+    @ColumnInfo(name = "clothes_quantity")
+    var clothesQuantity: String = "0 0 0 0"
 )

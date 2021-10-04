@@ -32,3 +32,12 @@ fun dateFormatter(day: Int, month: Int, year: Int): String {
     Log.i("myInfo", result)
     return result
 }
+
+fun stringToIntArray(string: String): MutableList<Int> {
+    val stringList: List<String> = string.trim().split(" ")
+    var resultArray: MutableList<Int> = mutableListOf()
+    stringList.forEach {
+        resultArray.add(it.toInt())
+    }
+    return resultArray
+}
