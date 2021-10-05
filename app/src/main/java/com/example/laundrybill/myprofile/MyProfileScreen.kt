@@ -1,5 +1,7 @@
 package com.example.laundrybill.myprofile
 
+import android.app.AlarmManager
+import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -32,11 +34,17 @@ import com.example.laundrybill.NavigationItem
 import com.example.laundrybill.addlaundry.clothList
 import com.example.laundrybill.convertIsoFormatToDate
 import com.example.laundrybill.database.Laundry
+import com.example.laundrybill.notification.cancelNotification
 import com.example.laundrybill.routeBuilder
 import com.example.laundrybill.stringToIntArray
 
 @Composable
-fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewModel) {
+fun MyProfileScreen(
+    navController: NavHostController,
+    viewModel: MyProfileViewModel,
+    alarmManager: AlarmManager,
+    context: Context
+) {
 
     viewModel.initialize()
 
@@ -86,7 +94,7 @@ fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewMo
 
             LazyColumn {
                 itemsIndexed(pendingLaundry) { index, laundryItem ->
-                    LaundryItemCard(laundryItem, viewModel, navController)
+                    LaundryItemCard(laundryItem, viewModel, navController, alarmManager, context)
                 }
             }
         }
@@ -124,7 +132,8 @@ fun MyProfileScreen(navController: NavHostController, viewModel: MyProfileViewMo
 fun LaundryItemCard(
     laundry: Laundry,
     viewModel: MyProfileViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    alarmManager: AlarmManager, context: Context
 ) {
     Card(
         Modifier
@@ -167,6 +176,7 @@ fun LaundryItemCard(
             Row(Modifier.padding(vertical = 4.dp, horizontal = 2.dp)) {
 
                 Button(onClick = {
+                    cancelNotification(alarmManager, context, laundry.notificationId)
                     viewModel.onCollectedClicked(laundry)
                     viewModel.initialize()
                 }) {
@@ -174,6 +184,7 @@ fun LaundryItemCard(
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 Button(onClick = {
+                    cancelNotification(alarmManager, context, laundry.notificationId)
                     viewModel.onDeleteLaundryClicked(laundry.itemId)
                     viewModel.initialize()
                 }) {

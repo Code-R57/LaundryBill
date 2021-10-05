@@ -1,9 +1,7 @@
 package com.example.laundrybill.addlaundry
 
 import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -43,7 +41,8 @@ import com.example.laundrybill.NavigationItem
 import com.example.laundrybill.convertIsoFormatToDate
 import com.example.laundrybill.database.Laundry
 import com.example.laundrybill.dateFormatter
-import com.example.laundrybill.notification.NotificationBroadcast
+import com.example.laundrybill.notification.cancelNotification
+import com.example.laundrybill.notification.setNotification
 import com.example.laundrybill.stringToIntArray
 import java.util.*
 
@@ -102,9 +101,11 @@ fun AddLaundryScreen(
                     Spacer(modifier = Modifier.weight(1f))
                     Button(
                         onClick = {
+                            val notificationId = laundryItem.notificationId
                             laundryItem.totalClothes = 0
                             laundryItem.totalAmount = 0.00
                             laundryItem.clothesQuantity = ""
+                            laundryItem.notificationId = System.currentTimeMillis().toInt()
                             clothNumber.forEachIndexed { index, number ->
                                 laundryItem.totalClothes += number
                                 laundryItem.totalAmount += (clothList[index].second * number)
@@ -114,8 +115,21 @@ fun AddLaundryScreen(
                                 viewModel.onAddClicked(laundryItem)
 
                             } else {
+                                cancelNotification(alarmManager, context, notificationId)
                                 viewModel.onEditClicked(laundryItem)
                             }
+
+                            val calendarDate = Calendar.getInstance()
+                            val ymd = laundryItem.collectionDate.split(" ")
+                            calendarDate.set(ymd[0].toInt(), ymd[1].toInt() - 1, ymd[2].toInt())
+                            if (laundryItem.collectionDate != "2021 01 01")
+                                setNotification(
+                                    alarmManager,
+                                    context,
+                                    calendarDate,
+                                    laundryItem.notificationId
+                                )
+
                             navController.navigate(NavigationItem.MyProfile.route)
                         }, modifier = Modifier
                             .padding(16.dp), shape = RoundedCornerShape(50)
@@ -124,11 +138,6 @@ fun AddLaundryScreen(
                             if (itemId == -1L) "Add" else "Edit",
                             style = TextStyle(fontSize = 20.sp)
                         )
-                        val calendarDate = Calendar.getInstance()
-                        val ymd = laundryItem.collectionDate.split(" ")
-                        calendarDate.set(ymd[0].toInt(), ymd[1].toInt() - 1, ymd[2].toInt())
-                        if (laundryItem.collectionDate != "2021 01 01")
-                            setNotification(alarmManager, context, calendarDate)
                     }
                 }
             }
@@ -232,20 +241,3 @@ val clothList = listOf(
     Pair("Blanket", 40.00)
 )
 
-fun setNotification(alarmManager: AlarmManager, context: Context, calendar: Calendar) {
-
-    val intent = Intent(context, NotificationBroadcast::class.java)
-
-    val pendingIntent = PendingIntent.getBroadcast(
-        context,
-        System.currentTimeMillis().toInt(), intent, 0
-    )
-
-    val currentDate = Calendar.getInstance()
-    val difference = Calendar.getInstance()
-    difference.timeInMillis = calendar.timeInMillis - currentDate.timeInMillis
-
-    alarmManager.setExact(
-        AlarmManager.RTC, System.currentTimeMillis() + difference.timeInMillis, pendingIntent
-    )
-}

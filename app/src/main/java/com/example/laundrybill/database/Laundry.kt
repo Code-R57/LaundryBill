@@ -26,5 +26,8 @@ data class Laundry(
     var status: String = "Pending",
 
     @ColumnInfo(name = "clothes_quantity")
-    var clothesQuantity: String = intArrayToString(IntArray(clothList.size) { 0 })
+    var clothesQuantity: String = intArrayToString(IntArray(clothList.size) { 0 }),
+
+    @ColumnInfo(name = "notification_id")
+    var notificationId: Int = 0
 )
