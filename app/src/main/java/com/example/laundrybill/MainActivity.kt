@@ -123,7 +123,7 @@ fun Navigation(
         Modifier.padding(innerPadding)
     ) {
         composable(NavigationItem.MyProfile.route) {
-            MyProfileScreen(navController, myProfileViewModel)
+            MyProfileScreen(navController, myProfileViewModel, alarmManager, context)
         }
         composable(NavigationItem.LaundryHistory.route) {
             LaundryHistoryScreen(historyViewModel)
