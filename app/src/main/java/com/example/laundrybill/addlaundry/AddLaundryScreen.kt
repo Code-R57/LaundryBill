@@ -89,7 +89,7 @@ fun AddLaundryScreen(
         }
         LazyColumn(modifier = Modifier.fillMaxWidth()) {
             item {
-                CalendarInput(laundryItem)
+                CalendarInput(laundryItem, itemId)
             }
             val values = stringToIntArray(laundryItem.clothesQuantity)
             itemsIndexed(clothList) { index, cloth ->
@@ -147,7 +147,7 @@ fun AddLaundryScreen(
 }
 
 @Composable
-private fun CalendarInput(laundryItem: Laundry) {
+private fun CalendarInput(laundryItem: Laundry, itemId: Long) {
     Row(
         Modifier
             .padding(4.dp)
@@ -163,10 +163,13 @@ private fun CalendarInput(laundryItem: Laundry) {
         val context = LocalContext.current
         val date = laundryItem.collectionDate.split(" ")
         val currentDate: Calendar = Calendar.getInstance()
-        currentDate.set(date[0].toInt(), date[1].toInt() - 1, date[2].toInt())
+        if(itemId != -1L)
+            currentDate.set(date[0].toInt(), date[1].toInt() - 1, date[2].toInt())
         Button(onClick = {
             MaterialDialog(context).show {
-                datePicker(minDate = Calendar.getInstance()) { _, date ->
+                datePicker(
+                    currentDate = currentDate
+                ) { _, date ->
                     laundryItem.collectionDate =
                         dateFormatter(date.dayOfMonth, date.month, date.year)
                 }

@@ -1,12 +1,12 @@
 <h1 align='center'> <img src='media/app_icon.png' width='75' align='center'> Laundry Bill </h1>
 
-**Laundry Bill** is a Laundry Management App for Hostelers. It is made for Android devices. The app is developed as a submission for the Round 3 of the induction of **[cruX](https://github.com/crux-bphc)**, The Programming & Computing Club of **[BITS Pilani, Hyderabad Campus](https://www.bits-pilani.ac.in/hyderabad/)**.
+**Laundry Bill** is a Laundry Management App for Hostelers. It is made for Android devices. The app is developed as a submission for the Round 3 of the induction for **[cruX](https://github.com/crux-bphc)**, The Programming & Computing Club of **[BITS Pilani, Hyderabad Campus](https://www.bits-pilani.ac.in/hyderabad/)**.
 
 ## Features
 - Adds Laundry Item (Collection Date, Type of Cloth and the Bill)
 - Stores the Data Entered and shows Pending Collections
 - Also show history of clothes given, the Total Amount Paid and the Pending Amount to be given
-- Has both Dark and Light Mode Support
+- Has both Dark and Light Mode Support and toggle button
 - Notifies the date of collection
 
 ## Dark Mode UI
